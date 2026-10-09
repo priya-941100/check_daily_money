@@ -1,0 +1,62 @@
+{% extends "base.html" %}{% block body %}
+<h2>💰 Deposit</h2>
+<div class="grid">
+  <div class="card">
+    <span class="mute">Balance</span
+    ><b style="display: block; font-size: 1.6rem">{{ bal|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Deposited today</span
+    ><b style="display: block; font-size: 1.6rem">{{ today|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Deposited this month</span
+    ><b style="display: block; font-size: 1.6rem">{{ month|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Total deposited</span
+    ><b style="display: block; font-size: 1.6rem">{{ total|inr }}</b>
+  </div>
+</div>
+<div class="card">
+  <h3>Add money</h3>
+  <form method="post" action="{{ url_for('deposit_add') }}">
+    <div class="row">
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="How many rupees?"
+        required
+      />
+      <input
+        name="purpose"
+        placeholder="Source (salary, pocket money...)"
+      /><input name="date" type="date" value="{{ today_date }}" />
+    </div>
+    <button>Deposit</button>
+  </form>
+</div>
+<div class="card">
+  <h3>Deposit history</h3>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Source</th>
+      <th>Amount</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.date }}</td>
+      <td>{{ r.purpose }}</td>
+      <td class="in">+{{ r.amount|inr }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="3" class="mute">No deposits yet.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

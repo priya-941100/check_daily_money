@@ -1,0 +1,58 @@
+{% extends "base.html" %}{% block body %}
+<h2>🎯 Goals</h2>
+<div class="card">
+  <h3>New goal</h3>
+  <form method="post" action="{{ url_for('goal_add') }}">
+    <div class="row">
+      <input name="name" placeholder="Goal (e.g. Laptop)" required />
+      <input
+        name="target"
+        type="number"
+        step="0.01"
+        min="1"
+        placeholder="Target amount"
+        required
+      />
+      <input name="deadline" type="date" />
+    </div>
+    <button>Create goal</button>
+  </form>
+</div>
+<p class="mute">Balance available to fund goals: {{ bal|inr }}</p>
+<div class="grid">
+  {% for g in goals %}
+  <div class="card">
+    <h3>{{ g.name }}</h3>
+    <p>{{ g.saved|inr }} / {{ g.target|inr }} ({{ g.pct }}%)</p>
+    <div class="bar"><i style="width:{{ g.pct }}%"></i></div>
+    {% if g.left<=0 %}
+    <p class="in">🎉 Goal reached!</p>
+    {% else %}
+    <p class="mute">
+      {{ g.left|inr }} to go{% if g.per_month %} · save about {{ g.per_month|inr
+      }}/month ({{ g.days }} days left){% endif %}
+    </p>
+    <form
+      method="post"
+      action="{{ url_for('goal_fund', gid=g.id) }}"
+      class="row"
+    >
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="Add ₹"
+        required
+      /><button>Add</button>
+    </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('goal_delete', gid=g.id) }}">
+      <button class="sm">Delete goal</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="mute">No goals yet. Create one above.</p>
+  {% endfor %}
+</div>
+{% endblock %}

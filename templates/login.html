@@ -1,0 +1,45 @@
+{% extends "base.html" %}{% block body %}
+<button class="icon-btn theme-float" type="button" data-theme-toggle>🌙</button>
+<div class="auth-split">
+  <section class="auth-hero">
+    <img src="{{ url_for('static', filename='logo.svg') }}" alt="SmartBank" />
+    <h1>SmartBank</h1>
+    <p>Track every rupee, save smarter and reach your goals faster.</p>
+    <ul>
+      <li>📊 Health score and smart insights</li>
+      <li>🎯 Goals with monthly savings plans</li>
+      <li>🔒 PIN protected with auto sign-out</li>
+    </ul>
+  </section>
+  <section class="auth-form">
+    <div class="auth-card">
+      <h2>Welcome back 👋</h2>
+      <p class="mute">Log in with your account number and PIN.</p>
+      <form method="post" style="margin-top: 18px">
+        <label>Account number</label>
+        <input
+          name="account_number"
+          inputmode="numeric"
+          autocomplete="username"
+          required
+        />
+        <label>PIN</label>
+        <div class="pw">
+          <input
+            name="pin"
+            type="password"
+            inputmode="numeric"
+            autocomplete="current-password"
+            required
+          /><button type="button" class="eye" data-eye>👁</button>
+        </div>
+        <button>Log in</button>
+      </form>
+      <p class="mute" style="margin-top: 16px">
+        New here? <a href="{{ url_for('register') }}">Create account</a> ·
+        <a href="{{ url_for('help_page') }}">How to use</a>
+      </p>
+    </div>
+  </section>
+</div>
+{% endblock %}

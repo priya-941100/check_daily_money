@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block body %}
+<div class="page-head"><div><h1>📄 Statement</h1><p class="mute">Balance: {{ bal|inr }}</p></div>
+  <div class="quick"><a class="btn ghost" href="{{ url_for('statement_csv', **request.args) }}">⬇ CSV</a><button class="btn" type="button" onclick="window.print()">🖨 Print / Save PDF</button></div></div>
+<div class="card no-print"><form method="get" class="row">
+  <input type="date" name="from" value="{{ request.args.get('from','') }}">
+  <input type="date" name="to" value="{{ request.args.get('to','') }}">
+  <select name="type"><option value="">All types</option>{% for t in types %}<option {{ 'selected' if request.args.get('type')==t }}>{{ t }}</option>{% endfor %}</select>
+  <input name="q" placeholder="Search purpose / category" value="{{ request.args.get('q','') }}">
+  <button>Filter</button></form></div>
+<div class="grid">
+  <div class="card"><span class="mute">Money in</span><h2 class="in" style="margin:4px 0 0">{{ money_in|inr }}</h2></div>
+  <div class="card"><span class="mute">Money out</span><h2 class="out" style="margin:4px 0 0">{{ money_out|inr }}</h2></div>
+  <div class="card"><span class="mute">Net</span><h2 style="margin:4px 0 0">{{ (money_in-money_out)|inr }}</h2></div>
+</div>
+<div class="card"><table><tr><th>Date</th><th>Type</th><th>Category</th><th>Purpose</th><th>Amount</th></tr>
+{% for r in rows %}{% set p = r.type in plus %}
+<tr><td>{{ r.date }}</td><td>{{ r.type }}</td><td>{{ r.category }}</td><td>{{ r.purpose }}</td>
+<td class="{{ 'in' if p else 'out' }}">{{ '+' if p else '−' }}{{ r.amount|inr }}</td></tr>
+{% else %}<tr><td colspan="5" class="mute">No transactions.</td></tr>{% endfor %}</table></div>
+{% endblock %}

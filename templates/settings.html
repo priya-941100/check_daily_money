@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block body %}
+<div class="page-head"><div><h1>⚙️ Settings</h1><p class="mute">Account •••• {{ acct.account_number[-4:] }}</p></div></div>
+<div class="grid g2">
+  <div class="card"><h3>👤 Profile</h3>
+    <form method="post" action="{{ url_for('settings_profile') }}">
+      <label>Full name</label><input name="name" value="{{ acct.name }}" required>
+      <button>Save name</button></form></div>
+  <div class="card"><h3>🔑 Change PIN</h3>
+    <form method="post" action="{{ url_for('settings_pin') }}">
+      <input name="current" type="password" inputmode="numeric" placeholder="Current PIN" required>
+      <input name="new" type="password" inputmode="numeric" placeholder="New PIN (4-6 digits)" required>
+      <input name="confirm" type="password" inputmode="numeric" placeholder="Repeat new PIN" required>
+      <button>Update PIN</button></form></div>
+  <div class="card"><h3>🪙 Preferences</h3>
+    <form method="post" action="{{ url_for('settings_prefs') }}">
+      <label class="switch"><input type="checkbox" name="roundup" {{ 'checked' if acct.roundup }}><span>Round-up savings</span></label>
+      <p class="mute">Every expense is rounded up to the next ₹10 and the spare change moves to savings automatically.</p>
+      <label>Low balance alert (₹)</label>
+      <input name="low" type="number" min="0" step="1" value="{{ '%.0f'|format(acct.low_balance) }}">
+      <button>Save preferences</button></form></div>
+  <div class="card danger"><h3>⚠️ Danger zone</h3>
+    <p class="mute">Permanently delete your account and all your data. This cannot be undone.</p>
+    <a class="btn danger" href="{{ url_for('close_account_page') }}">Close account</a></div>
+</div>
+<p class="mute">For your safety you are signed out automatically after 15 minutes of inactivity.</p>
+{% endblock %}

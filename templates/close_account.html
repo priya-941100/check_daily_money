@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block body %}
+<div class="card auth" style="border: 2px solid var(--err)">
+  <h2>❌ Close account</h2>
+  <p>
+    This <b>permanently deletes</b> your account and all its deposits, expenses,
+    savings, goals, budgets and recurring payments. It cannot be undone.
+  </p>
+  {% if bal > 0 %}
+  <div class="alert">
+    You still have {{ bal|inr }} in this account. Transfer or withdraw it first,
+    because it will be lost.
+  </div>
+  {% endif %}
+  <form method="post">
+    <input name="pin" type="password" placeholder="Enter your PIN" required />
+    <input
+      name="confirm"
+      placeholder="Type CLOSE to confirm"
+      required
+      autocomplete="off"
+    />
+    <button style="background: var(--err)">Delete my account</button>
+  </form>
+  <p><a href="{{ url_for('dashboard') }}">Cancel</a></p>
+</div>
+{% endblock %}

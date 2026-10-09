@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block body %}
+<h2>🧾 Expenses</h2>
+<div class="grid">
+<div class="card"><span class="mute">Balance</span><b style="display:block;font-size:1.6rem">{{ bal|inr }}</b></div>
+<div class="card"><span class="mute">Avg spend per day (this month)</span><b style="display:block;font-size:1.6rem">{{ avg|inr }}</b></div>
+<div class="card"><span class="mute">Projected month-end spend</span><b style="display:block;font-size:1.6rem">{{ projected|inr }}</b></div>
+<div class="card"><span class="mute">Top spending category</span><b style="display:block;font-size:1.6rem">{{ top.category if top else '-' }}</b>{% if top %}<span class="mute">{{ top.s|inr }}</span>{% endif %}</div>
+</div>
+<div class="grid">
+<div class="card">
+    <h3>Add expense</h3>
+<form method="post" action="{{ url_for('expense_add') }}">
+<input name="amount" type="number" step="0.01" min="0.01" placeholder="Amount" required>
+<select name="category">{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select>
+<input name="purpose" placeholder="Purpose (e.g. groceries, bus ticket)" required>
+<input name="date" type="date" value="{{ today_date }}">
+<button>Save expense</button></form></div>
+<div class="card"><h3>Spending by purpose ({{ month }})</h3>
+{% if values %}<canvas id="pie" height="220"></canvas>{% else %}<p class="mute">No expenses in this month.</p>{% endif %}</div>
+<div class="card"><h3>Monthly budgets</h3>
+<form method="post" action="{{ url_for('budget_set') }}"><div class="row">
+<select name="category">{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select>
+<input name="limit" type="number" step="0.01" min="1" placeholder="Limit" required></div><button>Set budget</button></form>
+{% for b in budgets %}<p style="margin:10px 0 2px">{{ b.category }}: {{ b.spent|inr }} / {{ b.limit|inr }}</p>
+<div class="bar"><i class="{{ 'over' if b.pct>=100 else 'warn' if b.pct>=80 else '' }}" style="width:{{ [b.pct,100]|min }}%"></i></div>{% endfor %}</div>
+</div>
+<div class="card"><h3>Expense list</h3>
+<form method="get" class="row"><input type="month" name="month" value="{{ month }}">
+<select name="category"><option value="">All categories</option>{% for c in categories %}<option {{ 'selected' if c==cat }}>{{ c }}</option>{% endfor %}</select>
+<button>Filter</button></form>
+<p><b>Total: <span class="out">{{ total|inr }}</span></b></p>
+<table><tr><th>Date</th><th>Purpose</th><th>Category</th><th>Amount</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.date }}</td><td>{{ r.purpose }}</td><td>{{ r.category }}</td><td class="out">−{{ r.amount|inr }}</td>
+<td><form method="post" action="{{ url_for('expense_delete', tid=r.id) }}"><button class="sm">✕</button></form></td></tr>
+{% else %}<tr><td colspan="5" class="mute">No expenses found.</td></tr>{% endfor %}</table></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const labels={{ labels|tojson }}, vals={{ values|tojson }};
+if(vals.length) new Chart(document.getElementById('pie'),{type:'doughnut',data:{labels:labels,datasets:[{data:vals}]}});
+</script>
+{% endblock %}

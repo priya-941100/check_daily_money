@@ -1,0 +1,143 @@
+{% extends "base.html" %}{% block body %}
+<div class="page-head">
+  <div>
+    <h1>🧮 Money tools</h1>
+    <p class="mute">Plan loans, investments and goals before you commit.</p>
+  </div>
+</div>
+<div class="grid g2">
+  <div class="card">
+    <h3>🏠 Loan EMI calculator</h3>
+    <label>Loan amount (₹)</label
+    ><input id="l_p" type="number" value="500000" oninput="emi()" />
+    <div class="row">
+      <div>
+        <label>Interest % per year</label
+        ><input id="l_r" type="number" step="0.1" value="9" oninput="emi()" />
+      </div>
+      <div>
+        <label>Years</label
+        ><input id="l_y" type="number" value="5" oninput="emi()" />
+      </div>
+    </div>
+    <div class="result" id="l_out"></div>
+  </div>
+  <div class="card">
+    <h3>📈 SIP calculator</h3>
+    <label>Invest every month (₹)</label
+    ><input id="s_m" type="number" value="5000" oninput="sip()" />
+    <div class="row">
+      <div>
+        <label>Expected return % per year</label
+        ><input id="s_r" type="number" step="0.1" value="12" oninput="sip()" />
+      </div>
+      <div>
+        <label>Years</label
+        ><input id="s_y" type="number" value="10" oninput="sip()" />
+      </div>
+    </div>
+    <div class="result" id="s_out"></div>
+  </div>
+  <div class="card">
+    <h3>🏦 Fixed deposit (FD) calculator</h3>
+    <label>Deposit amount (₹)</label
+    ><input id="f_p" type="number" value="100000" oninput="fd()" />
+    <div class="row">
+      <div>
+        <label>Interest % per year</label
+        ><input id="f_r" type="number" step="0.1" value="7" oninput="fd()" />
+      </div>
+      <div>
+        <label>Years</label
+        ><input id="f_y" type="number" value="3" oninput="fd()" />
+      </div>
+    </div>
+    <div class="result" id="f_out"></div>
+  </div>
+  <div class="card">
+    <h3>🎯 Goal planner</h3>
+    <label>Target amount (₹)</label
+    ><input id="g_t" type="number" value="200000" oninput="goal()" />
+    <div class="row">
+      <div>
+        <label>Interest % per year</label
+        ><input id="g_r" type="number" step="0.1" value="6" oninput="goal()" />
+      </div>
+      <div>
+        <label>Years</label
+        ><input id="g_y" type="number" value="2" oninput="goal()" />
+      </div>
+    </div>
+    <div class="result" id="g_out"></div>
+  </div>
+</div>
+<p class="mute">
+  These are estimates for planning only. Real returns and interest rates vary.
+</p>
+<script>
+  const inr = (v) =>
+    "₹" + Math.round(isFinite(v) ? v : 0).toLocaleString("en-IN");
+  const val = (id) => parseFloat(document.getElementById(id).value) || 0;
+  function show(id, rows) {
+    document.getElementById(id).innerHTML = rows
+      .map(
+        (r) =>
+          '<div class="li"><span>' + r[0] + "</span><b>" + r[1] + "</b></div>",
+      )
+      .join("");
+  }
+  function emi() {
+    const P = val("l_p"),
+      r = val("l_r") / 1200,
+      n = val("l_y") * 12;
+    const e = n
+        ? r
+          ? (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
+          : P / n
+        : 0,
+      t = e * n;
+    show("l_out", [
+      ["Monthly EMI", inr(e)],
+      ["Total interest", inr(t - P)],
+      ["Total payment", inr(t)],
+    ]);
+  }
+  function sip() {
+    const m = val("s_m"),
+      r = val("s_r") / 1200,
+      n = val("s_y") * 12;
+    const fv = r ? m * ((Math.pow(1 + r, n) - 1) / r) * (1 + r) : m * n;
+    show("s_out", [
+      ["Amount invested", inr(m * n)],
+      ["Estimated returns", inr(fv - m * n)],
+      ["Future value", inr(fv)],
+    ]);
+  }
+  function fd() {
+    const P = val("f_p"),
+      r = val("f_r") / 100,
+      y = val("f_y"),
+      fv = P * Math.pow(1 + r / 4, 4 * y);
+    show("f_out", [
+      ["Deposited", inr(P)],
+      ["Interest earned", inr(fv - P)],
+      ["Maturity amount", inr(fv)],
+    ]);
+  }
+  function goal() {
+    const T = val("g_t"),
+      r = val("g_r") / 1200,
+      n = val("g_y") * 12;
+    const m = n ? (r ? (T * r) / (Math.pow(1 + r, n) - 1) : T / n) : 0;
+    show("g_out", [
+      ["Save every month", inr(m)],
+      ["Total you put in", inr(m * n)],
+      ["Interest helps with", inr(T - m * n)],
+    ]);
+  }
+  emi();
+  sip();
+  fd();
+  goal();
+</script>
+{% endblock %}

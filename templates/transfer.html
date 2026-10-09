@@ -1,0 +1,84 @@
+{% extends "base.html" %}{% block body %}
+<div class="page-head">
+  <div>
+    <h1>🔁 Transfer money</h1>
+    <p class="mute">Balance: {{ bal|inr }}</p>
+  </div>
+</div>
+<div class="grid g2">
+  <div class="card">
+    <h3>Send money</h3>
+    {% if payees %}
+    <div class="chips-row">
+      {% for p in payees %}<span
+        class="chip"
+        onclick="document.getElementById('to').value='{{ p.account_number }}'"
+        >{{ p.name }} <small>•••• {{ p.account_number[-4:] }}</small></span
+      >{% endfor %}
+    </div>
+    {% endif %}
+    <form method="post">
+      <input id="to" name="to" placeholder="Receiver account number" required />
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="Amount"
+        required
+      />
+      <input name="note" placeholder="Note (optional)" />
+      <input
+        name="pin"
+        type="password"
+        placeholder="Confirm with your PIN"
+        required
+      />
+      <label class="switch"
+        ><input type="checkbox" name="save_payee" /><span
+          >Save as payee</span
+        ></label
+      >
+      <button>Send money</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Saved payees</h3>
+    {% for p in payees %}
+    <div class="li">
+      <span>{{ p.name }}<br /><small>{{ p.account_number }}</small></span>
+      <form method="post" action="{{ url_for('payee_delete', pid=p.id) }}">
+        <button class="sm">✕</button>
+      </form>
+    </div>
+    {% else %}
+    <p class="mute">
+      No saved payees yet. Tick "Save as payee" when you send money.
+    </p>
+    {% endfor %}
+  </div>
+</div>
+<div class="card">
+  <h3>Recent transfers</h3>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Amount</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.date }}</td>
+      <td>{{ r.purpose }}</td>
+      <td class="{{ 'in' if r.type=='transfer_in' else 'out' }}">
+        {{ '+' if r.type=='transfer_in' else '−' }}{{ r.amount|inr }}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="3" class="mute">No transfers yet.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

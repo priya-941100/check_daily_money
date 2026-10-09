@@ -1,0 +1,73 @@
+{% extends "base.html" %}{% block body %}
+<h2>⏰ Recurring payments</h2>
+<p class="mute">
+  Posts automatically once every month on the chosen day (1-28), when you open
+  the app.
+</p>
+<div class="card">
+  <form method="post">
+    <div class="row">
+      <select name="kind">
+        <option value="deposit">Deposit (salary, allowance)</option>
+        <option value="expense">Expense (rent, subscription)</option>
+      </select>
+      <select name="category">
+        {% for c in categories %}
+        <option>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="row">
+      <input name="purpose" placeholder="Purpose" required />
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="Amount"
+        required
+      />
+      <input
+        name="day"
+        type="number"
+        min="1"
+        max="28"
+        placeholder="Day of month"
+        required
+      />
+    </div>
+    <button>Add recurring</button>
+  </form>
+</div>
+<div class="card">
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Purpose</th>
+      <th>Amount</th>
+      <th>Day</th>
+      <th></th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.kind }}</td>
+      <td>{{ r.purpose }} <span class="mute">({{ r.category }})</span></td>
+      <td>{{ r.amount|inr }}</td>
+      <td>{{ r.day }}</td>
+      <td>
+        <form
+          method="post"
+          action="{{ url_for('recurring_delete', rid=r.id) }}"
+        >
+          <button class="sm">✕</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" class="mute">Nothing set up yet.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

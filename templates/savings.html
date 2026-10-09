@@ -1,0 +1,110 @@
+{% extends "base.html" %}{% block body %}
+<h2>🏦 Savings</h2>
+<div class="grid">
+  <div class="card">
+    <span class="mute">Total savings</span
+    ><b style="display: block; font-size: 1.6rem">{{ total|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Locked in goals</span
+    ><b style="display: block; font-size: 1.6rem">{{ in_goals|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Free savings</span
+    ><b style="display: block; font-size: 1.6rem">{{ free|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Saved this month</span
+    ><b style="display: block; font-size: 1.6rem">{{ saved_m|inr }}</b
+    ><span class="mute">Savings rate: {{ rate }}% of deposits</span>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h3>Move to savings</h3>
+    <p class="mute">Balance: {{ bal|inr }}</p>
+    <form method="post" action="{{ url_for('savings_add') }}">
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="Amount"
+        required
+      /><button>Save money</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Withdraw from savings</h3>
+    <p class="mute">Available: {{ free|inr }}</p>
+    <form method="post" action="{{ url_for('savings_withdraw') }}">
+      <input
+        name="amount"
+        type="number"
+        step="0.01"
+        min="0.01"
+        placeholder="Amount"
+        required
+      /><button>Withdraw</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Savings calculator</h3>
+    <input
+      id="pm"
+      type="number"
+      placeholder="Save per month (₹)"
+      oninput="calc()"
+    />
+    <div class="row">
+      <input
+        id="pr"
+        type="number"
+        placeholder="Interest % per year"
+        oninput="calc()"
+      /><input id="py" type="number" placeholder="Years" oninput="calc()" />
+    </div>
+    <p id="pout" class="mute">Enter values to see your future savings.</p>
+  </div>
+</div>
+<div class="card">
+  <h3>Savings history</h3>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Amount</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.date }}</td>
+      <td>{{ r.purpose }}</td>
+      <td class="{{ 'in' if r.type=='saving' else 'out' }}">
+        {{ '+' if r.type=='saving' else '−' }}{{ r.amount|inr }}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="3" class="mute">No savings yet.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<script>
+  function calc() {
+    const m = +document.getElementById("pm").value || 0,
+      r = (+document.getElementById("pr").value || 0) / 1200,
+      y = +document.getElementById("py").value || 0,
+      n = y * 12;
+    const fv = r ? m * ((Math.pow(1 + r, n) - 1) / r) : m * n;
+    document.getElementById("pout").textContent =
+      "₹" +
+      Math.round(fv).toLocaleString("en-IN") +
+      " after " +
+      y +
+      " years (you put in ₹" +
+      Math.round(m * n).toLocaleString("en-IN") +
+      ")";
+  }
+</script>
+{% endblock %}

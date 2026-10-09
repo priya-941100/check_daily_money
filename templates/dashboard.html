@@ -1,0 +1,144 @@
+{% extends "base.html" %}{% block body %}
+<div class="page-head">
+  <div>
+    <h1>
+      <span id="greet">Welcome</span>, {{ session.name.split(' ')[0] }} 👋
+    </h1>
+    <p class="mute">Account •••• {{ acct.account_number[-4:] }}</p>
+  </div>
+  <div class="quick">
+    <a class="btn" href="{{ url_for('deposit_page') }}">＋ Deposit</a>
+    <a class="btn ghost" href="{{ url_for('expenses_page') }}">− Expense</a>
+    <a class="btn ghost" href="{{ url_for('transfer_page') }}">⇄ Transfer</a>
+  </div>
+</div>
+{% for a in alerts %}
+<div class="alert">⚠️ {{ a }}</div>
+{% endfor %}
+
+<div class="grid hero-grid">
+  <div class="hero">
+    <span>Available balance</span>
+    <div class="amt" data-count="{{ bal }}">{{ bal|inr }}</div>
+    <div class="chips">
+      <div><small>Deposited (month)</small><b>{{ dep|inr }}</b></div>
+      <div><small>Spent (month)</small><b>{{ exp|inr }}</b></div>
+      <div><small>Profit (month)</small><b>{{ profit|inr }}</b></div>
+      <div><small>Total savings</small><b>{{ s_total|inr }}</b></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Financial health</h3>
+    <div class="ring-wrap">
+      <svg viewBox="0 0 120 120" class="ring">
+        <circle cx="60" cy="60" r="52" class="ring-bg" />
+        <circle
+          cx="60"
+          cy="60"
+          r="52"
+          class="ring-fg"
+          style="stroke:{{ h.color }};stroke-dasharray:{{ (h.score*3.267)|round(1) }} 327"
+        />
+      </svg>
+      <div class="ring-num">
+        <b>{{ h.score }}</b><small>{{ h.label }}</small>
+      </div>
+    </div>
+    <ul class="tips">
+      {% for t in h.tips %}
+      <li>{{ t }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <h3>Income vs expense · last 6 months</h3>
+    <canvas id="trend" height="150"></canvas>
+  </div>
+  <div class="card">
+    <h3>Spending by category (this month)</h3>
+    {% if cat_values %}<canvas id="donut" height="150"></canvas>{% else %}
+    <p class="mute">No expenses yet this month.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <h3>💡 Insights</h3>
+    <ul class="list">
+      {% for i in insights %}
+      <li>{{ i }}</li>
+      {% endfor %}
+    </ul>
+    <h3 style="margin-top: 20px">⏰ Upcoming this month</h3>
+    {% for u in upcoming %}
+    <div class="li">
+      <span>{{ u.purpose }} <small>in {{ u.in_days }} day(s)</small></span
+      ><b class="{{ 'in' if u.kind=='deposit' else 'out' }}"
+        >{{ u.amount|inr }}</b
+      >
+    </div>
+    {% else %}
+    <p class="mute">Nothing scheduled.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h3>🎯 Goals</h3>
+    {% for g in goals %}
+    <div class="li" style="border: 0; padding-bottom: 0">
+      <span>{{ g.name }}</span><small>{{ g.pct }}%</small>
+    </div>
+    <div class="bar"><i style="width:{{ g.pct }}%"></i></div>
+    {% else %}
+    <p class="mute">
+      No goals yet. <a href="{{ url_for('goals_page') }}">Create one</a>
+    </p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h3>Recent activity</h3>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Details</th>
+      <th>Category</th>
+      <th>Amount</th>
+    </tr>
+    {% for r in recent %}{% set p = r.type in plus %}
+    <tr>
+      <td>{{ r.date }}</td>
+      <td>{{ r.purpose }}</td>
+      <td>{{ r.category }}</td>
+      <td class="{{ 'in' if p else 'out' }}">
+        {{ '+' if p else '−' }}{{ r.amount|inr }}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="4" class="mute">
+        No activity yet. Make your first deposit!
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<script>
+  if (typeof Chart !== 'undefined') {
+    const T = {{ trend|tojson }};
+    new Chart(document.getElementById('trend'), {type:'bar', data:{labels:T.map(x=>x.label), datasets:[
+      {label:'Income', data:T.map(x=>x.inc), backgroundColor:'#10b981', borderRadius:8},
+      {label:'Expense', data:T.map(x=>x.exp), backgroundColor:'#f43f5e', borderRadius:8}]},
+      options:{plugins:{legend:{position:'bottom'}}, scales:{y:{beginAtZero:true}}}});
+    const V = {{ cat_values|tojson }}, L = {{ cat_labels|tojson }};
+    if (V.length) new Chart(document.getElementById('donut'), {type:'doughnut',
+      data:{labels:L, datasets:[{data:V, backgroundColor:window.PALETTE, borderWidth:0}]},
+      options:{cutout:'68%', plugins:{legend:{position:'bottom'}}}});
+  }
+</script>
+{% endblock %}

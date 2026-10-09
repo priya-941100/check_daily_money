@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SmartBank</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='logo.svg') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("theme") ||
+          (matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+      } catch (e) {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </head>
+  <body>
+    <div class="toasts">
+      {% for cat,msg in get_flashed_messages(with_categories=true) %}
+      <div class="toast {{ cat }}">
+        {{ '✅' if cat=='ok' else '⚠️' }} {{ msg }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="{{ 'shell' if session.aid else 'bare' }}">
+      {% if session.aid %}
+      <div class="overlay" id="overlay"></div>
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="{{ url_for('dashboard') }}"
+          ><img
+            src="{{ url_for('static', filename='logo.svg') }}"
+            alt="SmartBank logo"
+          /><span>SmartBank</span></a
+        >
+        <nav class="nav">
+          {% for ep,icon,label in
+          [('dashboard','🏠','Home'),('deposit_page','💰','Deposit'),('expenses_page','🧾','Expenses'),('savings_page','🏦','Savings'),('profit_page','📈','Profit'),('goals_page','🎯','Goals'),('transfer_page','🔁','Transfer'),('recurring_page','⏰','Recurring'),('statement_page','📄','Statement'),('tools_page','🧮','Tools'),('settings_page','⚙️','Settings'),('help_page','❓','Help')]
+          %}
+          <a href="{{ url_for(ep) }}" class="{{ 'on' if request.endpoint==ep }}"
+            ><i>{{ icon }}</i>{{ label }}</a
+          >{% endfor %}
+        </nav>
+        <div class="side-foot">
+          <div class="user">
+            <div class="avatar">{{ session.name[:1]|upper }}</div>
+            <div><b>{{ session.name }}</b><small>Signed in</small></div>
+          </div>
+          <div class="side-actions">
+            <button
+              class="icon-btn"
+              type="button"
+              data-theme-toggle
+              title="Dark / light mode"
+            >
+              🌙</button
+            ><a class="btn ghost" style="flex: 1" href="{{ url_for('logout') }}"
+              >Logout</a
+            >
+          </div>
+        </div>
+      </aside>
+      {% endif %}
+      <div class="content">
+        {% if session.aid %}
+        <header class="topbar">
+          <button class="icon-btn" type="button" id="menuBtn">☰</button
+          ><b>SmartBank</b>
+        </header>
+        {% endif %}
+        <main>{% block body %}{% endblock %}</main>
+      </div>
+    </div>
+  </body>
+</html>

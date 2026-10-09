@@ -1,0 +1,150 @@
+{% extends "base.html" %}{% block body %}
+<h2>❓ How to use SmartBank</h2>
+<div class="alert">
+  SmartBank is a <b>personal money tracker</b>. It does not hold real money or
+  connect to a real bank. Never enter your real bank PIN, card number or
+  passwords here.
+</div>
+
+<div class="card">
+  <h3>🚀 Quick start</h3>
+  <ol>
+    <li>
+      <b>Create account:</b> choose any 9-16 digit account number and a 4-6
+      digit PIN. Remember both. The PIN cannot be recovered.
+    </li>
+    <li><b>Log in</b> with your account number and PIN.</li>
+    <li>
+      <b>Deposit</b> the money you have, then record every <b>expense</b> with
+      its purpose.
+    </li>
+    <li>
+      Open <b>Savings</b>, <b>Profit</b> and <b>Goals</b> to see how you are
+      doing.
+    </li>
+  </ol>
+</div>
+
+<details class="card" open>
+  <summary>💰 Deposit: add money</summary>
+  <p>
+    Enter how many rupees you received and where it came from (salary, pocket
+    money, gift). The page shows what you deposited today, this month and in
+    total.
+  </p>
+</details>
+
+<details class="card">
+  <summary>🧾 Expenses: record spending</summary>
+  <ul>
+    <li>
+      Enter the amount, pick a category (Food, Travel, Bills...) and write the
+      <b>purpose</b>, for example "bus ticket".
+    </li>
+    <li>You cannot spend more than your balance.</li>
+    <li>
+      The pie chart shows where your money went. The page also shows your
+      average spending per day and your projected month-end spending.
+    </li>
+    <li>
+      <b>Budgets:</b> set a monthly limit for a category. You get a warning at
+      80% and when you go over.
+    </li>
+    <li>Wrong entry? Press ✕ to delete an expense.</li>
+  </ul>
+</details>
+
+<details class="card">
+  <summary>🏦 Savings: keep money aside</summary>
+  <ul>
+    <li>
+      <b>Move to savings</b> takes money out of your balance so you are not
+      tempted to spend it.
+    </li>
+    <li>
+      <b>Withdraw</b> brings free savings back to your balance. Money inside
+      goals is locked.
+    </li>
+    <li>
+      The calculator shows how much you can have in the future if you save a
+      fixed amount every month.
+    </li>
+  </ul>
+</details>
+
+<details class="card">
+  <summary>📈 Profit: how much you gained</summary>
+  <p>
+    Profit = money deposited − money spent in a month. The savings rate is the
+    percentage of your income you kept. Transfers and savings are not counted as
+    income or spending.
+  </p>
+</details>
+
+<details class="card">
+  <summary>🎯 Goals: save for something</summary>
+  <p>
+    Create a goal (laptop, trip, phone) with a target amount and an optional
+    date. Add money to it whenever you can. The app tells you how much to save
+    per month to reach it on time. Deleting a goal puts its money back into free
+    savings.
+  </p>
+</details>
+
+<details class="card">
+  <summary>🔁 Transfer: send money to another SmartBank account</summary>
+  <p>
+    Enter the receiver's account number, the amount and your PIN. The money
+    leaves your balance and reaches theirs immediately. Check the account number
+    carefully, because a transfer cannot be undone.
+  </p>
+</details>
+
+<details class="card">
+  <summary>⏰ Recurring: automatic monthly entries</summary>
+  <p>
+    Add things that repeat every month, such as salary, rent or a subscription.
+    Choose a day from 1 to 28. They are added automatically the first time you
+    open the app on or after that day.
+  </p>
+</details>
+
+<details class="card">
+  <summary>📄 Statement: full history</summary>
+  <p>
+    Filter your transactions by date and type, and download them as a CSV file
+    that opens in Excel or Google Sheets.
+  </p>
+</details>
+
+<details class="card">
+  <summary>🔒 Safety tips</summary>
+  <ul>
+    <li>Do not share your PIN with anyone.</li>
+    <li>After 3 wrong PIN attempts the account is locked for 5 minutes.</li>
+    <li>Always click <b>Logout</b> when you use a shared computer.</li>
+  </ul>
+</details>
+
+<details class="card">
+  <summary>❌ Close account</summary>
+  <p>
+    Use <b>Close account</b> in the top bar. This permanently deletes your
+    account and all your data. First move or withdraw any money you still want
+    to track. You must enter your PIN and type CLOSE to confirm.
+  </p>
+</details>
+
+<details class="card">
+  <summary>🙋 Common questions</summary>
+  <p><b>I forgot my PIN.</b> It cannot be recovered. Create a new account.</p>
+  <p>
+    <b>Why does it say insufficient balance?</b> Your balance is deposits minus
+    expenses, savings and transfers. Deposit more money first.
+  </p>
+  <p>
+    <b>Why is my profit different from my balance?</b> Balance is all your money
+    right now. Profit is only for one month and ignores savings and transfers.
+  </p>
+</details>
+{% endblock %}

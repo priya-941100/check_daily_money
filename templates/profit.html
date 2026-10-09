@@ -1,0 +1,67 @@
+{% extends "base.html" %}{% block body %}
+<h2>📈 Profit</h2>
+<p class="mute">
+  Profit = money deposited − money spent (transfers and savings are not
+  counted).
+</p>
+<div class="grid">
+  <div class="card">
+    <span class="mute">This month's profit</span
+    ><b
+      style="display: block; font-size: 1.6rem"
+      class="{{ 'in' if cur and cur.profit>=0 else 'out' }}"
+      >{{ (cur.profit if cur else 0)|inr }}</b
+    >{% if cur %}<span class="mute">Savings rate {{ cur.rate }}%</span>{% endif
+    %}
+  </div>
+  <div class="card">
+    <span class="mute">Last 12 months total</span
+    ><b style="display: block; font-size: 1.6rem">{{ total|inr }}</b>
+  </div>
+  <div class="card">
+    <span class="mute">Best month</span
+    ><b style="display: block; font-size: 1.6rem"
+      >{{ best.mth if best else '-' }}</b
+    >{% if best %}<span class="mute">{{ best.profit|inr }}</span>{% endif %}
+  </div>
+</div>
+<div class="card">
+  <h3>Income vs expense</h3>
+  {% if chart %}<canvas id="bars" height="110"></canvas>{% else %}
+  <p class="mute">No data yet.</p>
+  {% endif %}
+</div>
+<div class="card">
+  <h3>Month by month</h3>
+  <table>
+    <tr>
+      <th>Month</th>
+      <th>Income</th>
+      <th>Expense</th>
+      <th>Profit</th>
+      <th>Savings rate</th>
+    </tr>
+    {% for m in months %}
+    <tr>
+      <td>{{ m.mth }}</td>
+      <td>{{ m.inc|inr }}</td>
+      <td>{{ m.exp|inr }}</td>
+      <td class="{{ 'in' if m.profit>=0 else 'out' }}">{{ m.profit|inr }}</td>
+      <td>{{ m.rate }}%</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5" class="mute">No data yet.</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  const t={{ chart|tojson }};
+  if(t.length) new Chart(document.getElementById('bars'),{type:'bar',data:{labels:t.map(x=>x.mth),
+  datasets:[{label:'Income',data:t.map(x=>x.inc),backgroundColor:'#16a34a'},
+  {label:'Expense',data:t.map(x=>x.exp),backgroundColor:'#dc2626'},
+  {label:'Profit',data:t.map(x=>x.profit),backgroundColor:'#2563eb'}]}});
+</script>
+{% endblock %}
